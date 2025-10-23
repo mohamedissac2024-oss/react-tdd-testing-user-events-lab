@@ -1,24 +1,83 @@
-function App() {
-  return (
-    <main>
-      <h1>Hi, I'm (your name)</h1>
-      <img alt="My profile pic" src="https://via.placeholder.com/350" />
-      <h2>About Me</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </p>
+import React, { useState } from "react";
 
-      <div>
-        <a href="https://github.com">GitHub</a>
-        <a href="https://linkedin.com">LinkedIn</a>
-      </div>
-    </main>
+function App() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    interests: [],
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        interests: checked
+          ? [...prev.interests, value]
+          : prev.interests.filter((interest) => interest !== value),
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <div>
+      <h1>My Portfolio</h1>
+      {!submitted ? (
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="name">Name:</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+
+          <fieldset>
+            <legend>Select your interests:</legend>
+            {["Coding", "Design", "Music"].map((interest) => (
+              <label key={interest}>
+                <input
+                  type="checkbox"
+                  name="interests"
+                  value={interest}
+                  checked={formData.interests.includes(interest)}
+                  onChange={handleChange}
+                />
+                {interest}
+              </label>
+            ))}
+          </fieldset>
+
+          <button type="submit">Sign Up</button>
+        </form>
+      ) : (
+        <div role="alert">
+          <h2>Thank you, {formData.name}!</h2>
+          <p>Your signup with {formData.email} was successful.</p>
+          {formData.interests.length > 0 && (
+            <p>Your interests: {formData.interests.join(", ")}</p>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
